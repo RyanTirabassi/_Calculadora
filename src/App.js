@@ -5,40 +5,44 @@ export default function App() {
   const [input, setInput] = useState("0");
   const [justCalculated, setJustCalculated] = useState(false);
 
-  const handleClick = (value) => {
-    
-    if (input === "Erro") {
-      if (value === "AC" || value === "=") {
-        setInput("0");
-      } else {
-        setInput(value);
-      }
-      setJustCalculated(false);
-      return;
-    }
-
-    if (value === "AC") {
+const handleClick = (value) => {
+  if (input === "Erro" || input === "Não é possível dividir por zero") {
+    if (value === "AC" || value === "=") {
       setInput("0");
-      setJustCalculated(false);
-    } else if (value === "=") {
-      try {
-        const result = eval(input).toString();
-        setInput(result);
-        setJustCalculated(true); 
-      } catch {
-        setInput("Erro");
-        setJustCalculated(false);
-      }
     } else {
-    
-      if (justCalculated && (/[0-9.]/).test(value)) {
-        setInput(value);
+      setInput(value);
+    }
+    setJustCalculated(false);
+    return;
+  }
+
+  if (value === "AC") {
+    setInput("0");
+    setJustCalculated(false);
+  } else if (value === "=") {
+    try {
+      const result = eval(input);
+
+      if (!isFinite(result)) {
+        setInput("Impos. dividir por zero");
       } else {
-        setInput((prev) => (prev === "0" ? value : prev + value));
+        setInput(result.toString());
       }
+
+      setJustCalculated(true);
+    } catch {
+      setInput("Erro");
       setJustCalculated(false);
     }
-  };
+  } else {
+    if (justCalculated && /[0-9.]/.test(value)) {
+      setInput(value);
+    } else {
+      setInput((prev) => (prev === "0" ? value : prev + value));
+    }
+    setJustCalculated(false);
+  }
+};
 
   const buttons = [
     "+", "-", "×", "÷",
