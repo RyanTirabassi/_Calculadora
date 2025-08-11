@@ -3,18 +3,40 @@ import "./App.css";
 
 export default function App() {
   const [input, setInput] = useState("0");
+  const [justCalculated, setJustCalculated] = useState(false);
 
   const handleClick = (value) => {
+    
+    if (input === "Erro") {
+      if (value === "AC" || value === "=") {
+        setInput("0");
+      } else {
+        setInput(value);
+      }
+      setJustCalculated(false);
+      return;
+    }
+
     if (value === "AC") {
       setInput("0");
+      setJustCalculated(false);
     } else if (value === "=") {
       try {
-        setInput(eval(input).toString());
+        const result = eval(input).toString();
+        setInput(result);
+        setJustCalculated(true); 
       } catch {
         setInput("Erro");
+        setJustCalculated(false);
       }
     } else {
-      setInput((prev) => (prev === "0" ? value : prev + value));
+    
+      if (justCalculated && (/[0-9.]/).test(value)) {
+        setInput(value);
+      } else {
+        setInput((prev) => (prev === "0" ? value : prev + value));
+      }
+      setJustCalculated(false);
     }
   };
 
@@ -32,7 +54,7 @@ export default function App() {
         {buttons.map((btn, index) => (
           <button
             key={index}
-            onClick={() => handleClick(btn === "÷" ? "/" : btn)}
+            onClick={() => handleClick(btn === "÷" ? "/" : btn === "×" ? "*" : btn)}
           >
             {btn}
           </button>
